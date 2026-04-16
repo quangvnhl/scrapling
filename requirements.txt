@@ -1,0 +1,4 @@
+fastapi
+scrapling[all]
+curl_cffi
+uvicorn
