@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import re
 from scrapling import Fetcher
-Fetcher.configure(auto_match=False)  # and the rest
 import uvicorn
 
 app = FastAPI(title="Shopee Scraper API")
@@ -72,7 +71,7 @@ def process_scraping(url):
 
     target = f"https://shopee.vn/product/{sid}/{pid}"
     
-    # Khởi tạo fetcher giống hệt file scrape.py mẫu
+    # Khởi tạo fetcher
     fetcher = Fetcher()
     page = fetcher.get(target)
     
@@ -106,6 +105,41 @@ async def scrape(url: str):
         return data
     except asyncio.TimeoutError:
         raise HTTPException(status_code=408, detail="Thời gian trích xuất dữ liệu vượt quá 5 giây")
+    except ValueError as ve:
+        raise HTTPException(status_code=404, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+def process_scrape_full(url):
+    sid, pid = get_ids(url)
+    
+    if not sid:
+        raise ValueError("Không lấy được ID từ URL")
+    
+    if sid == "SHOP":
+        target = url.split('?')[0]
+    else:
+        target = f"https://shopee.vn/product/{sid}/{pid}"
+    
+    fetcher = Fetcher()
+    page = fetcher.get(target)
+    
+    html_source = page.body.decode('utf-8', errors='ignore') if hasattr(page, 'body') else page.text
+        
+    return {
+        "status": "success",
+        "data": {
+            "html": html_source
+        }
+    }
+
+@app.get("/scrape-full")
+async def scrape_full(url: str):
+    try:
+        data = await asyncio.wait_for(asyncio.to_thread(process_scrape_full, url), timeout=10.0)
+        return data
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=408, detail="Thời gian trích xuất dữ liệu vượt quá 10 giây")
     except ValueError as ve:
         raise HTTPException(status_code=404, detail=str(ve))
     except Exception as e:
