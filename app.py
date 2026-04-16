@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import re
 from scrapling import Fetcher
-Fetcher.configure(adaptive=True, keep_comments=False, keep_cdata=False)  # and the rest
+Fetcher.configure(auto_match=False)  # and the rest
 import uvicorn
 
 app = FastAPI(title="Shopee Scraper API")
