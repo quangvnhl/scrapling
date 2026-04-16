@@ -17,4 +17,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Chạy trên cổng 7860 (Hugging Face yêu cầu)
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7869"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
