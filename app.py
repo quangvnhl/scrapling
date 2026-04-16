@@ -111,18 +111,9 @@ async def scrape(url: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 def process_scrape_full(url):
-    sid, pid = get_ids(url)
-    
-    if not sid:
-        raise ValueError("Không lấy được ID từ URL")
-    
-    if sid == "SHOP":
-        target = url.split('?')[0]
-    else:
-        target = f"https://shopee.vn/product/{sid}/{pid}"
-    
+        
     fetcher = Fetcher()
-    page = fetcher.get(target)
+    page = fetcher.get(url)
     
     html_source = page.body.decode('utf-8', errors='ignore') if hasattr(page, 'body') else page.text
         
