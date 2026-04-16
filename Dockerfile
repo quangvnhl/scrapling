@@ -12,6 +12,7 @@ WORKDIR /app
 # Cài đặt thư viện Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip show scrapling || true
 
 # Copy code vào
 COPY . .
